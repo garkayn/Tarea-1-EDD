@@ -47,11 +47,12 @@ void operacion_1() {
 }
 
 void operacion_2(){
-    Imagen* img = load("Pikachu.png");
-    Imagen* copy = load("Pikachu.png");
-    img->width = copy->height;
-    img->height = copy->width;
-    img->channels = copy->channels;
+    Imagen* img = load("AA.png");
+    Imagen* copy = new Imagen();
+    copy->width = img->height;
+    copy->height = img->width;
+    copy->channels = img->channels;
+    copy->data = new unsigned char[copy->width * copy->height * copy->channels];
     int h=img->height;
     int w=img->width;
     int c=img->channels;
@@ -60,12 +61,11 @@ void operacion_2(){
             int indice = c*(i*h + j);
             int indice_copy = c*(w*(h - 1 - j) + i);
             for(int k=0; k<c;k++){
-                img->data[indice+k] = copy->data[indice_copy+k];
+                copy->data[indice+k] = img->data[indice_copy+k];
             }
         }
-        
     }
-    save(img,"operacion_2.png");
+    save(copy,"operacion_2.png");
     delete copy;
 }
 
@@ -112,7 +112,7 @@ void operacion_4_error(int limite){
 }
 
 
-char dictionary[] = ''
+//char dictionary[] = ''
 
 int main() {
     operacion_1();
