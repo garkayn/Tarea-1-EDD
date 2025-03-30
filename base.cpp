@@ -27,7 +27,8 @@ void save(Imagen* img, const char* filename) {
     cout << "Imagen guardada:  " << filename << "\n";
 }
 
-void operacion_1(Imagen* img) {  
+void operacion_1() {  
+    Imagen* img = load("Pikachu.png");
     unsigned char* p1 = new unsigned char();
 
     for(int i = 0; i < (img->height); i++){    
@@ -41,41 +42,82 @@ void operacion_1(Imagen* img) {
             }
         }
     }
+    save (img, "operacion_1.png");
     delete p1;
 }
 
-void operacion_2(Imagen* img){
-    
+void operacion_2(){
+    Imagen* img = load("Pikachu.png");
+    Imagen* copy = load("Pikachu.png");
+    img->width = copy->height;
+    img->height = copy->width;
+    img->channels = copy->channels;
+    int h=img->height;
+    int w=img->width;
+    int c=img->channels;
+    for(int i = 0; i < w; i++){
+        for(int j = 0; j < h; j++){
+            int indice = c*(i*h + j);
+            int indice_copy = c*(w*(h - 1 - j) + i);
+            for(int k=0; k<c;k++){
+                img->data[indice+k] = copy->data[indice_copy+k];
+            }
+        }
+        
+    }
+    save(img,"operacion_2.png");
+    delete copy;
 }
 
-unsigned char *guardar_pixeles(Imagen* img){
-    unsigned char* p_pixel = new unsigned char[(img->height * img->channels * img->width)];
-    for(int i = 0; i<(img->height * img->width);i++){
-        unsigned char* p_canal = new unsigned char[(img->channels)];
-        for(int j=0; j<img->channels; j++){
-            p_canal[j] = img->data[j + i*img->channels];
-        }
-        p_pixel[i] = *p_canal;
+void operacion_3(float atenuacion){
+    Imagen* img = load("Pikachu.png");
+    for(int i = 0; i < img->height * img->width * img->channels; i += img->channels){
+        for(int j = 0; j < 3; j++){
+            img->data[i + j] *= atenuacion;
+        }      
     }
-    return p_pixel;
+    save(img,"operacion_3.png");
 }
-    
+
+void operacion_4(int limite){
+    Imagen* img = load("Pikachu.png");
+    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+        float NTSC = img->data[i] * 0.299 + img->data[i + 1] * 0.587 + img->data[i + 2] * 0.114;
+        if(NTSC < limite){
+            for(int j = 0; j < 3; j++){
+                img->data[i + j] = 0;
+            }
+        } else {
+            for(int j = 0; j < 3; j++){
+                img->data[i + j] = 255;
+            } 
+        }  
+    }   
+    save(img,"operacion_4.png");
+}
+
+// Creo que este es el error que se muestra
+void operacion_4_error(int limite){
+    Imagen* img = load("Pikachu.png");
+    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+        for(int j = 0; j < 3; j++){
+            if(img->data[i + j] < limite){
+                img->data[i + j] = 0;
+            } else {
+                img->data[i + j] = 255;
+            }
+        }
+    }   
+    save(img,"operacion_4_error.png");
+}
+
+
+char dictionary[] = ''
 
 int main() {
-    //Cargamos la imagen
-    Imagen* img = load("Pikachu.png");
-    
-    operacion_1(img);
-
-    unsigned char *a = guardar_pixeles(img);
-    for (int i = 0; i < img->height * img->channels * img->width; i++) {
-        cout << a[i];
-    }
-
-    // Almacenamos el resultado
-    save(img, "output.png");
+    operacion_1();
+    operacion_2();
+    operacion_3(0.5);
+    operacion_4(127);
+    operacion_4_error(127);
 }
-//Para crear un puntero que apunte a la direccion base del arreglo es de la forma
-//tipo_de_dato nombre_del_puntero = new array[largo]
-//Si creo este puntero dentro de una función, el array no se borra de la memoria, no funciona como memoria local,
-//Sin embargo el puntero si, que hay que siosi retornarlo, no seai won
