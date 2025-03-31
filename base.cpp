@@ -111,13 +111,49 @@ void operacion_4_error(int limite){
     save(img,"operacion_4_error.png");
 }
 
+char* to_ascii(const char* filename, char* peticion){
+    Imagen* img = load(filename);
+    int N = 4;
+    float rango = 256/N;
+    char* ascii = new char [img->channels * img->width * img->height];
+
+    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+        float NTSC = img->data[i] * 0.299 + img->data[i + 1] * 0.587 + img->data[i + 2] * 0.114;
+        for(int j=0; j<N;j++){
+            if(NTSC<(rango*j + rango)){
+                ascii[i / 4] = peticion[j];
+                break; //Break se usa para que se quede con la iteracion correcta, en caso contrario, sobreescribiria solamente el ultimo caracter ascii de peticion
+            }
+        }
+    }
+
+    char** bidim = new char*[img->width];
+    for(int i=0; i<img->height;i++){
+        bidim[i] = new char[img->height];
+    }
+    int pixel = 0;
+    for(int i = 0; i < 256; i++) {
+        for(int j = 0; j < 256; j++) {
+            bidim[i][j] = ascii[pixel++];
+        }
+    }
+
+
+
+    return ascii;
+}
 
 //char dictionary[] = ''
 
 int main() {
-    operacion_1();
-    operacion_2();
-    operacion_3(0.5);
-    operacion_4(127);
-    operacion_4_error(127);
+    //operacion_1();
+    //operacion_2();
+    //operacion_3(0.5);
+    //operacion_4(127);
+    //operacion_4_error(127);
+    char array[] = "#X/.";
+    char* prueba = to_ascii("Pikachu.png", array);
+    for(int i=0; i<256*256;i++){
+        cout<<prueba[i];
+    }
 }
