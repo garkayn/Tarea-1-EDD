@@ -5,6 +5,7 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -81,7 +82,7 @@ void operacion_3(float atenuacion){
 
 void operacion_4(int limite){
     Imagen* img = load("Pikachu.png");
-    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+    for(int i = 0; i < img->height * img->width * img->channels; i += img->channels){
         float NTSC = img->data[i] * 0.299 + img->data[i + 1] * 0.587 + img->data[i + 2] * 0.114;
         if(NTSC < limite){
             for(int j = 0; j < 3; j++){
@@ -99,7 +100,7 @@ void operacion_4(int limite){
 // Creo que este es el error que se muestra
 void operacion_4_error(int limite){
     Imagen* img = load("Pikachu.png");
-    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+    for(int i = 0; i < img->height * img->width * img->channels; i += img->channels){
         for(int j = 0; j < 3; j++){
             if(img->data[i + j] < limite){
                 img->data[i + j] = 0;
@@ -111,39 +112,53 @@ void operacion_4_error(int limite){
     save(img,"operacion_4_error.png");
 }
 
-char* to_ascii(const char* filename, char* peticion){
+char** to_ascii(const char* filename, string peticion){
     Imagen* img = load(filename);
-    int N = 4;
-    float rango = 256/N;
+    int N = peticion.length();
+    int rango = 256/N;
     char* ascii = new char [img->channels * img->width * img->height];
 
-    for(int i = 0; i < img->height * img->width * img->channels; i += 4){
+    for(int i = 0; i < img->height * img->width * img->channels; i += img->channels){
         float NTSC = img->data[i] * 0.299 + img->data[i + 1] * 0.587 + img->data[i + 2] * 0.114;
         for(int j=0; j<N;j++){
-            if(NTSC<(rango*j + rango)){
-                ascii[i / 4] = peticion[j];
+            if(NTSC<(rango*(j-1) + rango)){
+                ascii[i / img->channels] = peticion[j];
                 break; //Break se usa para que se quede con la iteracion correcta, en caso contrario, sobreescribiria solamente el ultimo caracter ascii de peticion
+            }
+            else{
+                ascii[i / img->channels] = peticion[j];
             }
         }
     }
 
-    char** bidim = new char*[img->width];
+    char** bidim = new char*[img->height];
     for(int i=0; i<img->height;i++){
-        bidim[i] = new char[img->height];
+        bidim[i] = new char[img->width];
     }
     int pixel = 0;
-    for(int i = 0; i < 256; i++) {
-        for(int j = 0; j < 256; j++) {
+    for(int i = 0; i < img->height; i++) {
+        for(int j = 0; j <img->width; j++) {
             bidim[i][j] = ascii[pixel++];
         }
     }
 
-
-
-    return ascii;
+    return bidim;
 }
-
-//char dictionary[] = ''
+string ingresar_ascii(){
+    //Esta función le pedirá al usuario el largo del arreglo de caracteres que desee utilizar para el ascii,
+    //junto con dichos caracteres.
+    int n;
+    cout<<"Ingrese el largo del arreglo ascii: ";
+    cin>>n; //El usuario ingresa el largo del arreglo.
+    string peticion = ""; //Preguntar si podemos ocupar getline
+    for(int i=0; i<n; i++){
+        char c;
+        cout<<"Ingrese el caracter numero "<<i+1<<": ";
+        cin>>c;
+        peticion +=c;
+    }
+    return peticion;
+}
 
 int main() {
     //operacion_1();
@@ -151,9 +166,12 @@ int main() {
     //operacion_3(0.5);
     //operacion_4(127);
     //operacion_4_error(127);
-    char array[] = "#X/.";
-    char* prueba = to_ascii("Pikachu.png", array);
-    for(int i=0; i<256*256;i++){
-        cout<<prueba[i];
+
+    string peticion = ingresar_ascii(); 
+    char** prueba = to_ascii("AA.png", peticion);
+    for(int i=0; i<742;i++){
+        for(int j=0; j<1062;j++){
+            cout<<prueba[i][j];
+        }
     }
 }
