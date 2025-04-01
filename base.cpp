@@ -6,6 +6,7 @@
 #include "stb_image_write.h"
 #include <iostream>
 #include <string>
+#include<fstream>
 
 using namespace std;
 
@@ -160,18 +161,25 @@ string ingresar_ascii(){
     return peticion;
 }
 
+void save_ascii(char** ascii){
+    ofstream file;
+    file.open("ascii.txt");
+    Imagen* img = load("siu.jpg");
+    for(int i=0; i<img->height;i++){
+        for(int j=0; j<img->width;j++){
+            file <<ascii[i][j];
+        }
+        file <<endl;
+    }
+}
+
 int main() {
     //operacion_1();
-    //operacion_2();
+    operacion_2();
     //operacion_3(0.5);
     //operacion_4(127);
     //operacion_4_error(127);
-
-    string peticion = ingresar_ascii(); 
-    char** prueba = to_ascii("AA.png", peticion);
-    for(int i=0; i<742;i++){
-        for(int j=0; j<1062;j++){
-            cout<<prueba[i][j];
-        }
-    }
+    //string peticion = ingresar_ascii(); 
+    //char** ascii = to_ascii("siu.jpg", peticion);
+    //save_ascii(ascii);
 }
