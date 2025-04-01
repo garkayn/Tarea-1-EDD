@@ -30,44 +30,53 @@ void save(Imagen* img, const char* filename) {
 }
 
 void operacion_1() {  
+    /*La idea de solucion, es recorrer fila por fila de arriba hacia abajo con 2 indices, uno que se ubique al extremo izquierdo de la fila,
+     y que avanze hacia la derecha, y el otro que se ubique al extremo derecho de la fila, y avanze hacia la izquierda, para luego ocupar
+    un puntero auxiliar, para hacer el cambio de los canales.*/
     Imagen* img = load("Pikachu.png");
-    unsigned char* p1 = new unsigned char();
-
+    unsigned char* p_aux = new unsigned char();
     for(int i = 0; i < (img->height); i++){    
-        for(int j = 0; j < (img->width/2); j++){
-            int id= i * img->width * img->channels + (img->width * img->channels -j * img->channels- img->channels);
-            int ii= i * img->width * img->channels  + j * img->channels;
-            for(int k = 0; k<img->channels;k++){
-                *p1 = img->data[id + k]; //Esto lo recorre de derecha a izquierda
-                img->data[id+k] = img->data[ii+k]; //Esto lo recorre de izquierda a derecha
-                img->data[ii + k] = *p1;
+        for(int j = 0; j < (img->width/2); j++){ 
+            int id= i * img->width * img->channels + (img->width * img->channels -j * img->channels- img->channels); 
+            int ii= i * img->width * img->channels  + j * img->channels; 
+            for(int k = 0; k<img->channels;k++){ //El for recorre los canales de cada pixel para hacer el intercambio de los colores de forma correcta.
+                *p_aux = img->data[id + k]; //Este se ubica a la derecha.
+                img->data[id+k] = img->data[ii+k]; //Este se ubica a la izquierda.
+                img->data[ii + k] = *p_aux;
             }
         }
     }
     save (img, "operacion_1.png");
-    delete p1;
+    delete p_aux;
 }
 
 void operacion_2(){
+    /* La idea de solucion, es guardar todo el espacio de memoria para la imagen para la imagen rotada, para luego leer la imagen original
+    de manera conveniente, para luego escribir sobre el espacio de memoria anteriormente mencionado.    
+    La imagen original sera leida columna por columna de izquierda a derecha y leyendo cada columna de abajo hacia arriba,
+     y sera escrite fila por fila de arriba hacia abajo, y escribiendo cada fila de izquierda a derecha */
     Imagen* img = load("Pikachu.png");
-    Imagen* copy = new Imagen();
-    copy->width = img->height;
-    copy->height = img->width;
-    copy->channels = img->channels;
-    copy->data = new unsigned char[img->width * img->height * img->channels];
+    Imagen* img_rotada = new Imagen();
+    /*Se pasa el alto de la imagen original, al ancho de la imagen rotada, y el ancho de la imagen original, al alto de la imagen rotada,
+    ya que al rotar la imagen, tambien se cambian sus dimensiones, y asi el struct de la imagen rotada, puede pasar correctamente la informacion
+    a la funcion save.*/
+    img_rotada->width = img->height;
+    img_rotada->height = img->width;
+    img_rotada->channels = img->channels;
+    img_rotada->data = new unsigned char[img->width * img->height * img->channels]; 
     for(int i = 0; i < img->width; i++){
         for(int j = 0; j < img->height; j++){
             for(int k = 0; k < img->channels; k++){
-                copy->data[img->channels * (i * img->height + j) + k] = 
+                img_rotada->data[img->channels * (i * img->height + j) + k] = 
                     img->data[img->channels * (img->width * (img->height - 1 - j) + i) + k];
             }
         }
     }
-    save(copy,"operacion_2.png");
-    delete copy;
-    delete [] copy->data;
+    save(img_rotada,"operacion_2.png");
     delete img;
-    stbi_image_free(img->data);
+    stbi_image_free(img->data); /*Esta funcion fue buscada en internet, ya que al no hacer save al puntero img,
+     la funcion stbi_write_png no libera la memoria ocupada por la imagen original. Y encontramos que para borrar el data de la imagen, se
+     usa stbi_image_free.*/
 }
 
 void operacion_3(float atenuacion){
@@ -173,7 +182,7 @@ void save_ascii(char** ascii){
 }
 
 int main() {
-    //operacion_1();
+    operacion_1();
     operacion_2();
     //operacion_3(0.5);
     //operacion_4(127);
