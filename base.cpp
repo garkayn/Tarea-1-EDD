@@ -49,26 +49,25 @@ void operacion_1() {
 }
 
 void operacion_2(){
-    Imagen* img = load("AA.png");
+    Imagen* img = load("Pikachu.png");
     Imagen* copy = new Imagen();
     copy->width = img->height;
     copy->height = img->width;
     copy->channels = img->channels;
-    copy->data = new unsigned char[copy->width * copy->height * copy->channels];
-    int h=img->height;
-    int w=img->width;
-    int c=img->channels;
-    for(int i = 0; i < w; i++){
-        for(int j = 0; j < h; j++){
-            int indice = c*(i*h + j);
-            int indice_copy = c*(w*(h - 1 - j) + i);
-            for(int k=0; k<c;k++){
-                copy->data[indice+k] = img->data[indice_copy+k];
+    copy->data = new unsigned char[img->width * img->height * img->channels];
+    for(int i = 0; i < img->width; i++){
+        for(int j = 0; j < img->height; j++){
+            for(int k = 0; k < img->channels; k++){
+                copy->data[img->channels * (i * img->height + j) + k] = 
+                    img->data[img->channels * (img->width * (img->height - 1 - j) + i) + k];
             }
         }
     }
     save(copy,"operacion_2.png");
     delete copy;
+    delete [] copy->data;
+    delete img;
+    stbi_image_free(img->data);
 }
 
 void operacion_3(float atenuacion){
