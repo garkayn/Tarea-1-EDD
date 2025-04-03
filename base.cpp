@@ -48,6 +48,8 @@ void operacion_1() {
     }
     save (img, "operacion_1.png");
     delete p_aux;
+    stbi_image_free(img->data);
+    delete img;
 }
 
 void operacion_2(){
@@ -73,10 +75,12 @@ void operacion_2(){
         }
     }
     save(img_rotada,"operacion_2.png");
-    delete img;
     stbi_image_free(img->data); /*Esta funcion fue buscada en internet, ya que al no hacer save al puntero img,
-     la funcion stbi_write_png no libera la memoria ocupada por la imagen original. Y encontramos que para borrar el data de la imagen, se
-     usa stbi_image_free.*/
+    la funcion stbi_write_png no libera la memoria ocupada por la imagen original. Y encontramos que para borrar el data de la imagen, se
+    usa stbi_image_free.*/
+    delete img;
+    delete[] img_rotada->data;
+    delete img_rotada;
 }
 
 void operacion_3(float atenuacion){
@@ -87,6 +91,8 @@ void operacion_3(float atenuacion){
         }      
     }
     save(img,"operacion_3.png");
+    stbi_image_free(img->data);
+    delete img;
 }
 
 void operacion_4(int limite){
@@ -104,6 +110,8 @@ void operacion_4(int limite){
         }  
     }   
     save(img,"operacion_4.png");
+    stbi_image_free(img->data);
+    delete img;
 }
 
 // Creo que este es el error que se muestra
@@ -119,6 +127,24 @@ void operacion_4_error(int limite){
         }
     }   
     save(img,"operacion_4_error.png");
+    stbi_image_free(img->data);
+    delete img;
+}
+
+string ingresar_ascii(){
+    //Esta función le pedirá al usuario el largo del arreglo de caracteres que desee utilizar para el ascii,
+    //junto con dichos caracteres.
+    int n;
+    cout<<"Ingrese el largo del arreglo ascii: ";
+    cin>>n; //El usuario ingresa el largo del arreglo.
+    string peticion = ""; //Preguntar si podemos ocupar getline
+    for(int i=0; i<n; i++){
+        char c;
+        cout<<"Ingrese el caracter numero "<<i+1<<": ";
+        cin>>c;
+        peticion +=c;
+    }
+    return peticion;
 }
 
 char** to_ascii(const char* filename, string peticion){
@@ -151,22 +177,10 @@ char** to_ascii(const char* filename, string peticion){
         }
     }
 
+    stbi_image_free(img->data);
+    delete img;
+    delete[] ascii;
     return bidim;
-}
-string ingresar_ascii(){
-    //Esta función le pedirá al usuario el largo del arreglo de caracteres que desee utilizar para el ascii,
-    //junto con dichos caracteres.
-    int n;
-    cout<<"Ingrese el largo del arreglo ascii: ";
-    cin>>n; //El usuario ingresa el largo del arreglo.
-    string peticion = ""; //Preguntar si podemos ocupar getline
-    for(int i=0; i<n; i++){
-        char c;
-        cout<<"Ingrese el caracter numero "<<i+1<<": ";
-        cin>>c;
-        peticion +=c;
-    }
-    return peticion;
 }
 
 void save_ascii(char** ascii){
@@ -179,6 +193,12 @@ void save_ascii(char** ascii){
         }
         file <<endl;
     }
+    for (int i = 0; i < img->height; i++) {
+        delete[] ascii[i];
+    }
+    delete[] ascii;
+    stbi_image_free(img->data);
+    delete img;
 }
 
 int main() {
