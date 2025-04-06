@@ -1,3 +1,5 @@
+Preguntas teóricas.
+
 Pregunta 1
 
 Se usa el unsigned char porque ocupa 1 byte, lo cual corresponde al espacio del canal de un pixel (que serian 3 canales en el caso del RGB o 4 en el caso del RGBA) , que es un entero del 0 al 255.Si usáramos otro tipo de dato, por ejemplo el int, que ocupa 4 bytes estaríamos reservando memoria que no vamos a usar, y al escalar esto a una imagen completa, que tiene miles de pixeles, seria un desperdicio muy grande de memoria.
@@ -11,7 +13,7 @@ Con unsigned int:  (N*N*3) * 4[byte] * 8[bit]/1[byte] = 96N*N[bit]
 
 Notar que la expresion (N*N*3) es la cantidad de canales totales de todos de los pixeles.
 
-En conclusion, almacenar la informacion de cada canal en unsigned char, gasta 4 veces menos memoria que hacerlo con int.
+En conclusion, almacenar la informacion de cada canal en unsigned char, gasta 4 veces menos memoria que hacerlo con int, y no reserva memoria que no se utiliza.
 
 https://learn.microsoft.com/es-es/cpp/cpp/data-type-ranges?view=msvc-170
 https://learn.microsoft.com/es-es/cpp/cpp/cpp-type-system-modern-cpp?view=msvc-170
@@ -23,4 +25,3 @@ Desde el indice 0 al indice 3, contienen informacion de los canales del primer p
 Pregunta 4
 
 La escala de grises se obtiene cuando los valores de los canales RGB son iguales. Para convertir la imagen, es necesario aplicar una fórmula que convierta los valores de rojo, verde y azul en un único valor de intensidad en escala de grises. Este valor se asigna por igual a los tres canales RGB, produciendo una imagen en escala de grises.
-
