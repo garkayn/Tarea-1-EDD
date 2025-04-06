@@ -111,14 +111,14 @@ string ingresar_ascii(){
     int n;
     cout<<"Ingrese el largo del arreglo ascii: ";
     cin>>n; //El usuario ingresa el largo del arreglo.
-    string peticion = "";
+    string peticion = ""; //Es el string de ascii que quiera usar el usuario para ejecutar la función too_ascii
     for(int i=0; i<n; i++){
         char c;
         cout<<"Ingrese el caracter numero "<<i+1<<": "; //Se concatena el string a medida que el usuario ingresa caracteres.
         cin>>c;
         peticion +=c;
     }
-    return peticion;
+    return peticion; //Se retorna la petición de caracteres ascii que quiera usar el usuario.
 }
 
 char** to_ascii(const char* filename, string peticion){
