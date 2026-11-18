@@ -1,0 +1,5 @@
+build/
+*.exe
+operacion_*.png
+*.o
+.vscode/
